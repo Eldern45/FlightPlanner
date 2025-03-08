@@ -12,10 +12,4 @@ public class FlightplanApplication {
 	public static void main(String[] args) {
 		SpringApplication.run(FlightplanApplication.class, args);
 	}
-
-	@GetMapping
-	public String hello() {
-		return "Hello, World!";
-	}
-
 }

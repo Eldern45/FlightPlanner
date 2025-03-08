@@ -1,5 +1,6 @@
 package com.example.flightplan.repository;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -31,6 +32,7 @@ public class Flight {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aircraft_id")
+    @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Aircraft aircraft;
 
     public Integer getId() {
@@ -89,4 +91,16 @@ public class Flight {
         this.aircraft = aircraft;
     }
 
+    @Override
+    public String toString() {
+        return "Flight{" +
+                "id=" + id +
+                ", arrivalPlace='" + arrivalPlace + '\'' +
+                ", departurePlace='" + departurePlace + '\'' +
+                ", arrivalTime=" + arrivalTime +
+                ", departureTime=" + departureTime +
+                ", price=" + price +
+                ", aircraft=" + aircraft +
+                '}';
+    }
 }
