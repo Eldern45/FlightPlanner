@@ -1,10 +1,12 @@
 package com.example.flightplan.repository;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 import org.hibernate.annotations.ColumnDefault;
 
 import java.math.BigDecimal;
+import java.time.Duration;
 import java.time.OffsetDateTime;
 
 @Entity
@@ -34,6 +36,18 @@ public class Flight {
     @JoinColumn(name = "aircraft_id")
     @JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
     private Aircraft aircraft;
+
+    @JsonProperty("flightDuration")
+    @Transient
+    public String getFlightDuration() {
+        if (departureTime != null && arrivalTime != null) {
+            Duration duration = Duration.between(departureTime, arrivalTime);
+            long hours = duration.toHours();
+            long minutes = duration.toMinutes() % 60;
+            return String.format("%dh %02dm", hours, minutes);
+        }
+        return "";
+    }
 
     public Integer getId() {
         return id;

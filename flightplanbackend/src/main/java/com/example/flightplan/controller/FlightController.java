@@ -2,10 +2,7 @@ package com.example.flightplan.controller;
 
 import com.example.flightplan.repository.Flight;
 import com.example.flightplan.service.FlightService;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -20,7 +17,8 @@ public class FlightController {
     }
 
     @GetMapping
-    public List<Flight> getFlights() {
-        return flightService.getAllFlights();
+    public List<Flight> getFlights(@RequestParam(required = false, value = "sort") String sortBy,
+                                   @RequestParam(required = false, defaultValue = "asc", value = "order") String order) {
+        return flightService.getAllFlights(sortBy, order);
     }
 }

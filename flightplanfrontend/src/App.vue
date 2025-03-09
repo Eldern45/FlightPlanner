@@ -1,15 +1,30 @@
 <template>
   <div id="app">
-    <h1>Список рейсов</h1>
+    <h1>FLights List:</h1>
+    <div>
+      <label for="sortSelect">Sort by:</label>
+      <select id="sortSelect" v-model="selectedSort" @change="fetchFlights">
+        <option value="">Default</option>
+        <option value="departure_date">Departure date</option>
+        <option value="duration">Flight duration</option>
+        <option value="price">Price</option>
+      </select>
+
+      <button v-if="selectedSort" @click="toggleSortOrder" class="sort-toggle">
+        <span v-if="sortOrder === 'asc'">▲</span>
+        <span v-else>▼</span>
+      </button>
+    </div>
     <table>
       <thead>
       <tr>
         <th>ID</th>
-        <th>Откуда</th>
-        <th>Куда</th>
-        <th>Время вылета</th>
-        <th>Время прилета</th>
-        <th>Цена</th>
+        <th>From</th>
+        <th>Where</th>
+        <th>Departure date</th>
+        <th>Arrival date</th>
+        <th>Duration</th>
+        <th>Price</th>
       </tr>
       </thead>
       <tbody>
@@ -17,8 +32,9 @@
         <td>{{ flight.id }}</td>
         <td>{{ flight.departurePlace }}</td>
         <td>{{ flight.arrivalPlace }}</td>
-        <td>{{ flight.departureTime }}</td>
-        <td>{{ flight.arrivalTime }}</td>
+        <td>{{ formatTime(flight.departureTime) }}</td>
+        <td>{{ formatTime(flight.arrivalTime) }}</td>
+        <td>{{ flight.flightDuration }}</td>
         <td>{{ flight.price }}</td>
       </tr>
       </tbody>
@@ -32,24 +48,82 @@ export default {
   data() {
     return {
       flights: [],
+      selectedSort: "",
+      sortOrder: "asc"
     };
   },
   created() {
-    // Обращаемся к API для получения списка рейсов
-    fetch("http://localhost:8080/api/flights")
-        .then(response => response.json())
-        .then(data => {
-          this.flights = data;
-        })
-        .catch(error => {
-          console.error("Ошибка при загрузке рейсов:", error);
-        });
+    this.fetchFlights();
+  },
+  methods: {
+    fetchFlights() {
+      let url = "http://localhost:8080/api/flights";
+      if (this.selectedSort) {
+        url += `?sort=${this.selectedSort}&order=${this.sortOrder}`;
+      }
+      fetch(url)
+          .then(response => response.json())
+          .then(data => {
+            this.flights = data;
+          })
+          .catch(error => {
+            console.error("Ошибка при загрузке рейсов:", error);
+          });
+    },
+    formatTime(timestamp) {
+      if (!timestamp) return "";
+      const date = new Date(timestamp);
+      return date.toLocaleString("ru-RU", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit"
+      });
+    },
+    toggleSortOrder() {
+      this.sortOrder = this.sortOrder === 'asc' ? 'desc' : 'asc';
+      this.fetchFlights();
+    }
   }
 };
 </script>
 
 <style>
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.sort-toggle {
+  background: none;
+  border: none;
+  font-size: 18px;
+  cursor: pointer;
+  margin-left: 10px;
+}
 </style>
+
+
+<style>
+table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1em;
+}
+
+th, td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+</style>
+
 
 
 
